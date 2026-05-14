@@ -122,10 +122,20 @@ def dashboard():
     uid = session['user_id']
     try:
         with db.cursor() as cur:
-            cur.execute("SELECT COALESCE(SUM(amount),0) AS total FROM transactions WHERE user_id=%s AND type='income'", (uid,))
+            cur.execute("""
+    SELECT COALESCE(SUM(t.amount), 0) AS total 
+    FROM transactions t
+    JOIN categories c ON t.category_id = c.id
+    WHERE t.user_id = %s AND c.type = 'income'
+""", (uid,))
             total_income = cur.fetchone()['total'] or 0
 
-            cur.execute("SELECT COALESCE(SUM(amount),0) AS total FROM transactions WHERE user_id=%s AND type='expense'", (uid,))
+            cur.execute("""
+    SELECT COALESCE(SUM(t.amount), 0) AS total
+    FROM transactions t
+    JOIN categories c ON t.category_id = c.id
+    WHERE t.user_id = %s AND c.type = 'expense'
+""", (uid,))
             total_expense = cur.fetchone()['total'] or 0
 
             balance = float(total_income) - float(total_expense)
@@ -543,4 +553,4 @@ def format_date_filter(value):
         return str(value)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
