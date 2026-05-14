@@ -8,3 +8,6 @@ __pycache__/
 *.sqlite3
 .vscode/
 .idea/
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
